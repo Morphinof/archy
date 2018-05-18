@@ -1,0 +1,3 @@
+#index:
+#    path: /
+#    controller: Archy\Controller\DefaultController::index
