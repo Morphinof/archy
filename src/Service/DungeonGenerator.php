@@ -33,14 +33,16 @@ class DungeonGenerator
     }
 
     /**
+     * @param array $options
+     *
      * @throws \Exception
      */
-    public function generateDungeon(): void
+    public function generateDungeon(array $options): void
     {
         $this->dungeon = new Dungeon(DungeonTypeEnum::getRandom());
 
-        $numberOfLevels = $this->options[Options::OPT_NUMBER_OF_LEVELS] ?? 1;
-        $numberOfRooms  = $this->options[Options::OPT_NUMBER_OF_ROOMS] ?? rand(1, 10);
+        $numberOfLevels = $options[Options::OPT_NUMBER_OF_LEVELS] ?? $this->options[Options::OPT_NUMBER_OF_LEVELS];
+        $numberOfRooms  = $options[Options::OPT_NUMBER_OF_ROOMS] ?? $this->options[Options::OPT_NUMBER_OF_ROOMS];
 
         for ($i = 0; $i <= $numberOfLevels; $i++) {
             $level = $this->generateLevel($numberOfRooms);

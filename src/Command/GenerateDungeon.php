@@ -9,6 +9,7 @@
 namespace Archy\Command;
 
 use Archy\Service\DungeonGenerator;
+use Archy\Service\Options;
 use Symfony\Component\Console\Input\InputOption;
 
 class GenerateDungeon extends AbstractCommand
@@ -40,8 +41,8 @@ class GenerateDungeon extends AbstractCommand
         $this
             ->setName(self::NAME)
             ->addOption(
-                self::OPT_NUMBER_OF_ROOMS,
-                self::SCT_NUMBER_OF_ROOMS,
+                Options::OPT_NUMBER_OF_ROOMS,
+                Options::SCT_NUMBER_OF_ROOMS,
                 InputOption::VALUE_OPTIONAL
             );
     }
@@ -56,11 +57,11 @@ class GenerateDungeon extends AbstractCommand
     {
         if ($this->checkArguments()) {
             $options = [
-                self::OPT_NUMBER_OF_LEVELS => $this->input->getOption(self::OPT_NUMBER_OF_LEVELS) ?? self::NUMBER_OF_LEVELS,
-                self::OPT_NUMBER_OF_ROOMS  => $this->input->getOption(self::OPT_NUMBER_OF_ROOMS) ?? self::NUMBER_OF_ROOMS,
+                Options::OPT_NUMBER_OF_LEVELS => $this->input->getOption(Options::OPT_NUMBER_OF_LEVELS) ?? Options::NUMBER_OF_LEVELS,
+                Options::OPT_NUMBER_OF_ROOMS  => $this->input->getOption(Options::OPT_NUMBER_OF_ROOMS) ?? Options::NUMBER_OF_ROOMS,
             ];
 
-            $this->generator->generate($options);
+            $this->generator->generateDungeon($options);
 
             return true;
         }
