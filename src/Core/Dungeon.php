@@ -45,6 +45,10 @@ class Dungeon
         $this->name   = self::DEFAULT_NAME;
         $this->type   = $type;
         $this->levels = $levels;
+
+        if ($this->levels === null) {
+            $this->levels = new Collection();
+        }
     }
 
     /**

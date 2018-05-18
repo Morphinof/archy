@@ -8,6 +8,7 @@
 
 namespace Archy\Core;
 
+use Archy\Core\Enum\RoomTypeEnum;
 use Archy\Service\Options;
 
 class Level
@@ -21,6 +22,14 @@ class Level
     /** @var Room $entrance */
     private $entrance;
 
+    /**
+     * Level constructor.
+     *
+     * @param int|null  $numberOfRooms
+     * @param Room|null $entrance
+     *
+     * @throws \Exception
+     */
     public function __construct(int $numberOfRooms = null, Room $entrance = null)
     {
         $this->numberOfRooms = $numberOfRooms;
@@ -30,6 +39,10 @@ class Level
         }
 
         $this->entrance = $entrance;
+
+        if ($this->entrance === null) {
+            $this->entrance = new Room($this, RoomTypeEnum::getRandom(), rand(1, Room::MAX_ROOM_SIZE));
+        }
     }
 
     /**
@@ -131,7 +144,13 @@ class Level
             return $this->entrance;
         }
 
-        $available = $this->getAvailableRooms()[array_rand($this->getAvailableRooms(), 1)];
+        $rooms = $this->getAvailableRooms();
+
+        if (empty($rooms)) {
+            return null;
+        }
+
+        $available = $rooms[array_rand($rooms, 1)];
 
         if (empty($available)) {
             return null;

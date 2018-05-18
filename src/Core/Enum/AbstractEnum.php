@@ -18,6 +18,6 @@ abstract class AbstractEnum
      */
     public static function getRandom(): string
     {
-        return self::toArray()[array_rand(self::toArray(), 1)];
+        return static::toArray()[array_rand(static::toArray(), 1)];
     }
 }

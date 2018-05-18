@@ -41,6 +41,11 @@ class GenerateDungeon extends AbstractCommand
         $this
             ->setName(self::NAME)
             ->addOption(
+                Options::OPT_NUMBER_OF_LEVELS,
+                Options::SCT_NUMBER_OF_LEVELS,
+                InputOption::VALUE_OPTIONAL
+            )
+            ->addOption(
                 Options::OPT_NUMBER_OF_ROOMS,
                 Options::SCT_NUMBER_OF_ROOMS,
                 InputOption::VALUE_OPTIONAL

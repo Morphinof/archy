@@ -63,6 +63,8 @@ class DungeonGenerator
     {
         $level = new Level($numberOfRooms);
 
+        $this->dungeon->getLevels()->add($level);
+
         for ($i = 1; $i < $numberOfRooms; $i++) {
             $room = $this->generateRoom($level);
 
