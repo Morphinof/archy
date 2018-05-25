@@ -8,6 +8,7 @@
 
 namespace Archy\Core;
 
+use Archy\Core\Collection\Collection;
 use Archy\Core\Enum\DungeonTypeEnum;
 use Archy\Core\Enum\RoomTypeEnum;
 
@@ -41,7 +42,7 @@ class Dungeon
             throw new \Exception(sprintf('Invalid %s type %s, available types [%s]', __CLASS__, $type, implode(', ', DungeonTypeEnum::toArray())));
         }
 
-        $this->id     = uniqid(__CLASS__, true);
+        $this->id     = uniqid('Dungeon_');
         $this->name   = self::DEFAULT_NAME;
         $this->type   = $type;
         $this->levels = $levels;

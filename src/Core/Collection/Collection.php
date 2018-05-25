@@ -6,7 +6,7 @@
  * Time: 20:05
  */
 
-namespace Archy\Core;
+namespace Archy\Core\Collection;
 
 class Collection
 {

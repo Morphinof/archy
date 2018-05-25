@@ -8,7 +8,10 @@
 
 namespace Archy\Service;
 
+use Archy\Core\Door;
 use Archy\Core\Dungeon;
+use Archy\Core\Enum\CardinalPointEnum;
+use Archy\Core\Enum\DoorTypeEnum;
 use Archy\Core\Enum\DungeonTypeEnum;
 use Archy\Core\Enum\RoomTypeEnum;
 use Archy\Core\Level;
@@ -49,8 +52,6 @@ class DungeonGenerator
 
             $this->dungeon->getLevels()->add($level);
         }
-
-        dump($this->dungeon);
     }
 
     /**
@@ -61,16 +62,23 @@ class DungeonGenerator
      */
     public function generateLevel($numberOfRooms): Level
     {
+        dump(sprintf('Start generating level %d for %s...', $this->dungeon->getLevels()->count() + 1, $this->dungeon->getName()));
+
         $level = new Level($numberOfRooms);
 
         $this->dungeon->getLevels()->add($level);
 
         for ($i = 1; $i < $numberOfRooms; $i++) {
+            dump(sprintf('Generate room %d/%d', $i, $numberOfRooms));
+
             $room = $this->generateRoom($level);
 
             if (!$level->addRoom($room)) {
-                 throw new \Exception(sprintf('Unable to place room %d on level %d', $i, $this->dungeon->getLevels()->count()));
+                #dump($this->dungeon);
+                throw new \Exception(sprintf('Unable to place room %d on level %d', $i, $this->dungeon->getLevels()->count()));
             }
+
+            dump(sprintf('Room %d/%d added to level %d', $i, $numberOfRooms, $level->getNumber()));
         }
     }
 

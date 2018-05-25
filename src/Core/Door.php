@@ -13,7 +13,7 @@ use Archy\Core\Enum\DoorTypeEnum;
 
 class Door
 {
-    /** @var int $id */
+    /** @var string $id */
     private $id;
 
     /** @var string $type */
@@ -52,7 +52,7 @@ class Door
             throw new \Exception(sprintf('Missing parent door'));
         }
 
-        $this->id       = uniqid(__CLASS__, true);
+        $this->id       = uniqid('Door_');
         $this->type     = $type;
         $this->position = $position;
         $this->parent   = $parent;
@@ -60,9 +60,9 @@ class Door
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getId(): int
+    public function getId(): string
     {
         return $this->id;
     }
@@ -116,9 +116,9 @@ class Door
     }
 
     /**
-     * @return Room
+     * @return null|Room
      */
-    public function getRoom(): Room
+    public function getRoom(): ?Room
     {
         return $this->room;
     }
@@ -126,7 +126,7 @@ class Door
     /**
      * @param Room $room
      */
-    public function setRoom(Room $room): void
+    public function setRoom(?Room $room): void
     {
         $this->room = $room;
     }

@@ -8,7 +8,7 @@
 
 namespace Archy\Core;
 
-use Archy\Core\Enum\RoomTypeEnum;
+use Archy\Core\Collection\Collection;
 use Archy\Service\Options;
 
 class Level
@@ -19,18 +19,16 @@ class Level
     /** @var int $numberOfRooms */
     private $numberOfRooms = 0;
 
-    /** @var Room $entrance */
-    private $entrance;
+    /** @var Collection $rooms */
+    private $rooms;
 
     /**
      * Level constructor.
      *
-     * @param int|null  $numberOfRooms
-     * @param Room|null $entrance
-     *
-     * @throws \Exception
+     * @param int|null        $numberOfRooms
+     * @param Collection|null $rooms
      */
-    public function __construct(int $numberOfRooms = null, Room $entrance = null)
+    public function __construct(int $numberOfRooms = null, Collection $rooms = null)
     {
         $this->numberOfRooms = $numberOfRooms;
 
@@ -38,10 +36,10 @@ class Level
             $this->numberOfRooms = Options::NUMBER_OF_ROOMS + log($this->number * 4);
         }
 
-        $this->entrance = $entrance;
+        $this->rooms = $rooms;
 
-        if ($this->entrance === null) {
-            $this->entrance = new Room($this, RoomTypeEnum::getRandom(), rand(1, Room::MAX_ROOM_SIZE));
+        if ($this->rooms === null) {
+            $this->rooms = new Collection();
         }
     }
 
@@ -78,56 +76,19 @@ class Level
     }
 
     /**
-     * @return Room
-     */
-    public function getEntrance(): Room
-    {
-        return $this->entrance;
-    }
-
-    /**
-     * @param Room $entrance
-     */
-    public function setEntrance(Room $entrance): void
-    {
-        $this->entrance = $entrance;
-    }
-
-    /**
-     * @param Room|null $room
-     *
-     * @return array
-     */
-    public function getAllRooms(Room $room = null): array
-    {
-        static $rooms = [];
-        $currentRoom = null;
-
-        while (($currentRoom === null ? $currentRoom = $this->entrance : $room)) {
-            $rooms[] = $currentRoom;
-
-            /** @var Door $door */
-            foreach ($currentRoom->getDoors() as $door) {
-                $nextRoom = $door->getRoom();
-
-                $this->getAllRooms($nextRoom);
-            }
-        }
-
-        return $rooms;
-    }
-
-    /**
      * @return array
      */
     public function getAvailableRooms(): array
     {
-        $rooms = $this->getAllRooms();
         $available = [];
 
         /** @var Room $room */
-        foreach ($rooms as $room) {
-            if ($room->getDoors()->count() < Options::NUMBER_OF_DOORS) {
+        foreach ($this->rooms->items() as $room) {
+            dump(sprintf('Checking available doors of room %s %d door(s)', $room->getId(), $room->getDoors()->count()));
+
+            if (($door = $room->getAvailableDoor()) !== null) {
+                dump(sprintf('Available door %s founded !', $door->getId()));
+
                 $available[] = $room;
             }
         }
@@ -140,10 +101,6 @@ class Level
      */
     public function getRandomAvailableRoom(): ?Room
     {
-        if ($this->entrance->getDoors()->count() === 0) {
-            return $this->entrance;
-        }
-
         $rooms = $this->getAvailableRooms();
 
         if (empty($rooms)) {
@@ -166,9 +123,17 @@ class Level
      */
     public function addRoom(Room $room): bool
     {
+        if ($this->rooms->count() === 0) {
+            $this->rooms->add($room);
+
+            return true;
+        }
+
         $availableRoom = $this->getRandomAvailableRoom();
 
         if ($availableRoom === null) {
+            dump(sprintf('No more available rooms !'));
+
             return false;
         }
 
@@ -177,8 +142,12 @@ class Level
         if ($door !== null) {
             $door->setRoom($room);
 
+            dump(sprintf('Door %s has been linked to Room %s !', $door->getId(), $room->getId()));
+
             return true;
         }
+
+        dump(sprintf('No more available door in room %s but it should have been at least one !', $room->getId()));
 
         return false;
     }

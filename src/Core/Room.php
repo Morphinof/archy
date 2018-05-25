@@ -8,15 +8,17 @@
 
 namespace Archy\Core;
 
+use Archy\Core\Collection\Collection;
 use Archy\Core\Enum\CardinalPointEnum;
 use Archy\Core\Enum\DoorTypeEnum;
 use Archy\Core\Enum\RoomTypeEnum;
+use Archy\Service\Options;
 
 class Room
 {
     const MAX_ROOM_SIZE = 2;
 
-    /** @var int $id */
+    /** @var string $id */
     private $id;
 
     /** @var string $type */
@@ -55,31 +57,24 @@ class Room
             throw new \Exception(sprintf('Invalid size %d, max allowed size : %d', $size, self::MAX_ROOM_SIZE));
         }
 
-        $this->id    = uniqid(__CLASS__, true);
+        $this->id    = uniqid('Room_');
         $this->type  = $type;
         $this->size  = $size;
         $this->level = $level;
         $this->doors = $doors;
 
         if (empty($this->doors)) {
+            dump(sprintf('Init room %s', $this->id));
             $this->initDoors();
         }
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getId(): int
+    public function getId(): string
     {
         return $this->id;
-    }
-
-    /**
-     * @param int $id
-     */
-    public function setId(int $id): void
-    {
-        $this->id = $id;
     }
 
     /**
@@ -152,7 +147,7 @@ class Room
     public function getAvailableDoor(): ?Door
     {
         /** @var Door $door */
-        foreach ($this->getDoors() as $door) {
+        foreach ($this->getDoors()->items() as $door) {
             if ($door->getRoom() === null) {
                 return $door;
             }
@@ -169,15 +164,32 @@ class Room
     private function initDoors(): void
     {
         $this->doors = new Collection();
+        $positions   = CardinalPointEnum::doorsPositions();
 
-        if ($this->getLevel()) {
+        foreach ($positions as $position) {
+            if ($this->getDoors()->count() === 0 || rand(1, 2) === 2) {
+                $door = new Door(DoorTypeEnum::getRandom(), $position, $this, null);
 
+                $this->doors->add($door);
+
+                dump(
+                    sprintf(
+                        'Door added to room %s (%d/%d)!',
+                        $this->id,
+                        $this->getDoors()->count(),
+                        Options::NUMBER_OF_DOORS
+                    )
+                );
+            }
         }
-        foreach (CardinalPointEnum::doorsPositions() as $position) {
-            # Create a new random door
-            $door = new Door(DoorTypeEnum::getRandom(), $position, $this, null);
 
-            $this->doors->add($door);
-        }
+        dump(
+            sprintf(
+                'Room %s has %d/%d doors !',
+                $this->id,
+                $this->getDoors()->count(),
+                Options::NUMBER_OF_DOORS
+            )
+        );
     }
 }
